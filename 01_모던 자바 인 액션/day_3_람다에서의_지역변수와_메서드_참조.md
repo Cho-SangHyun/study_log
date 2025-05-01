@@ -31,3 +31,41 @@ num = 456;
 - 작성된 메서드 참조를 컴파일러가 자동으로 해당 위치의 컨텍스트에 맞는 람다 표현식으로 변환해주는 원리
   - 타입 검사, 추론 때와 마찬가지로 그 컨텍스트에서 기대되는 함수형 인터페이스가 있을 것임(대상 형식!)
   - 그 놈의 추상메서드의 함수 디스크립터에 맞게 변환해준다고 보면 됨
+ 
+### 예제 (내가 직접 활용한)
+다음과 같은 `List<HashMap<String, Object>>` 타입의 변수가 있었다.  
+
+```java
+// 리스트의 각 아이템들(HashMap<String, Object>)은 "AUDIT_NBR", "PNOT_SBJC_NBR"이란 키를 무조건 가진다
+List<HashMap<String, Object>> pointedSubjects = pointedSubjectsService.getAllPointedSubjects();
+```
+
+pointedSubjects에서 "AUDIT_NBR", "PNOT_SBJC_NBR" 키값들의 쌍들만 추출하고 싶으면 다음과 같이 써줄 수 있었다.
+
+```java
+List<HashMap<String, Object>> auditNbrAndPnotSbjcNbrPairs = pointedSubjects.stream()
+    .map(item -> {
+        HashMap<String, Object> pair = new HashMap<>();
+        pair.put("AUDIT_NBR", item.getOrDefault("AUDIT_NBR", ""));
+        pair.put("PNOT_SBJC_NBR", item.getOrDefault("PNOT_SBJC_NBR", 0));
+        return pair;
+    })
+    .collect(Collectors.toList());
+```
+
+그러나 stream의 map은 `Function<T, R>`이라는 함수형 인터페이스를 파라미터로 받는다.  
+즉 다음과 같이 `HashMap<String, Object>`를 파라미터로 받고 `HashMap<String, Object>`를 리턴하는 메서드를 작성한 뒤 메서드 참조를 사용해줄 수 있었다.
+
+```java
+    List<HashMap<String, Object>> auditNbrAndPnotSbjcNbrPairs = pointedSubjects.stream()
+        .map(this::extractAuditNbrAndPnotSbjcNbr)
+        .collect(Collectors.toList());
+
+
+public HashMap<String, Object> extractAuditNbrAndPnotSbjcNbr(HashMap<String, Object> data) {
+    HashMap<String, Object> pair = new HashMap<>();
+    pair.put("AUDIT_NBR", item.getOrDefault("AUDIT_NBR", ""));
+    pair.put("PNOT_SBJC_NBR", item.getOrDefault("PNOT_SBJC_NBR", 0));
+    return pair;
+}
+```
