@@ -24,10 +24,10 @@ for (Dish dish : menus) {
 이를 `reduce`를 사용하면 다음처럼 나타낼 수 있다.
 ```java
 // ex 1) 매뉴의 모든 칼로리의 합계를 구하라
-int sum = menus.stream().reduce(0, (a, b) -> a + b);
+int sum = menus.stream().map(Dish::getCalories).reduce(0, (a, b) -> a + b);
 
 // ex 2) 메뉴에서 가장 높은 칼로리를 구하라
-int maxCalories = menus.stream().reduce(01, (a, b) -> Math.max(a, b));
+int maxCalories = menus.stream().map(Dish::getCalories).reduce(01, (a, b) -> Math.max(a, b));
 ```
 <br>  
 
@@ -36,20 +36,20 @@ int maxCalories = menus.stream().reduce(01, (a, b) -> Math.max(a, b));
 초기값을 받지 않는 reduce를 사용하면 다음처럼 나타낼 수 있다.
 ```java
 // ex 1) 매뉴의 모든 칼로리의 합계를 구하라
-Optional<Integer> sum = menus.stream().reduce((a, b) -> a + b);
+Optional<Integer> sum = menus.stream().map(Dish::getCalories).reduce((a, b) -> a + b);
 
 // ex 2) 메뉴에서 가장 높은 칼로리를 구하라
-Optional<Integer> maxCalories = menus.stream().reduce((a, b) -> Math.max(a, b));
+Optional<Integer> maxCalories = menus.stream().map(Dish::getCalories).reduce((a, b) -> Math.max(a, b));
 ```
 <br>  
 
 Integer는 sum, max라는 정적 메서드를 제공하므로 다음처럼 바꿀 수도 있다.
 ```java
 // ex 1) 매뉴의 모든 칼로리의 합계를 구하라
-Optional<Integer> sum = menus.stream().reduce(Integer::sum);
+Optional<Integer> sum = menus.stream().map(Dish::getCalories).reduce(Integer::sum);
 
 // ex 2) 메뉴에서 가장 높은 칼로리를 구하라
-Optional<Integer> maxCalories = menus.stream().reduce(Integer::max);
+Optional<Integer> maxCalories = menus.stream().map(Dish::getCalories).reduce(Integer::max);
 ```
 <br>  
 
